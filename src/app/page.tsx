@@ -11,7 +11,7 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -40,11 +40,22 @@ export default function Home() {
     }
   };
 
-  const parseValue = (val: string) => {
+  const parseValue = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const val = event.target.value;
     if (val === "") {
       return undefined;
     } else {
-      return parseFloat(val);
+      const parsed = parseFloat(val);
+      if (Number.isNaN(parsed)) {
+        toast({
+          title: "Oops",
+          description: "You can only put numbers in these boxes",
+          status: "error",
+        });
+      } else {
+        return parsed;
+      }
     }
   };
 
@@ -56,28 +67,32 @@ export default function Home() {
           <Text>Target average</Text>
           <Input
             value={targetAverage?.toString()}
-            onChange={(e) => setTargetAverage(parseValue(e.target.value))}
+            onChange={(e) => setTargetAverage(parseValue(e))}
+            type="number"
           />
         </Box>
         <Box my="8px">
           <Text>Current average</Text>
           <Input
             value={currentAverage?.toString()}
-            onChange={(e) => setCurrentAverage(parseValue(e.target.value))}
+            onChange={(e) => setCurrentAverage(parseValue(e))}
+            type="number"
           />
         </Box>
         <Box my="8px">
           <Text>Total days in period</Text>
           <Input
             value={totalDays?.toString()}
-            onChange={(e) => setTotalDays(parseValue(e.target.value))}
+            onChange={(e) => setTotalDays(parseValue(e))}
+            type="number"
           />
         </Box>
         <Box my="8px">
           <Text>Days remaining in period</Text>
           <Input
             value={daysRemaining?.toString()}
-            onChange={(e) => setDaysRemaining(parseValue(e.target.value))}
+            onChange={(e) => setDaysRemaining(parseValue(e))}
+            type="number"
           />
         </Box>
         <Button mt="16px" variant={"solid"} onClick={() => onCalculate()}>
