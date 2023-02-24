@@ -1,91 +1,100 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from './page.module.css'
+"use client";
 
-const inter = Inter({ subsets: ['latin'] })
+import Image from "next/image";
+import { Inter } from "next/font/google";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Input,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
+import { useState } from "react";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  const toast = useToast();
+
+  const [targetAverage, setTargetAverage] = useState<number>();
+  const [currentAverage, setCurrentAverage] = useState<number>();
+  const [totalDays, setTotalDays] = useState<number>();
+  const [daysRemaining, setDaysRemaining] = useState<number>();
+
+  const [result, setResult] = useState<number>();
+
+  const onCalculate = () => {
+    if (targetAverage && totalDays && currentAverage && daysRemaining) {
+      const calcResult =
+        (targetAverage * totalDays -
+          currentAverage * (totalDays - daysRemaining)) /
+        daysRemaining;
+      setResult(calcResult);
+    } else {
+      toast({
+        title: "Hey",
+        description: "We need all the boxes filled out to do the calcs!",
+      });
+    }
+  };
+
+  const parseValue = (val: string) => {
+    if (val === "") {
+      return undefined;
+    } else {
+      return parseFloat(val);
+    }
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    <Flex width={"100vw"} minH={"100vh"} p={"16px"} justifyContent={"center"}>
+      <Flex maxW="600px" w="100%" direction={"column"}>
+        <Heading>KPI Calc</Heading>
+        <Box my="8px">
+          <Text>Target average</Text>
+          <Input
+            value={targetAverage?.toString()}
+            onChange={(e) => setTargetAverage(parseValue(e.target.value))}
+          />
+        </Box>
+        <Box my="8px">
+          <Text>Current average</Text>
+          <Input
+            value={currentAverage?.toString()}
+            onChange={(e) => setCurrentAverage(parseValue(e.target.value))}
+          />
+        </Box>
+        <Box my="8px">
+          <Text>Total days in period</Text>
+          <Input
+            value={totalDays?.toString()}
+            onChange={(e) => setTotalDays(parseValue(e.target.value))}
+          />
+        </Box>
+        <Box my="8px">
+          <Text>Days remaining in period</Text>
+          <Input
+            value={daysRemaining?.toString()}
+            onChange={(e) => setDaysRemaining(parseValue(e.target.value))}
+          />
+        </Box>
+        <Button mt="16px" variant={"solid"} onClick={() => onCalculate()}>
+          Calculate!
+        </Button>
+        <Box mt="24px">
+          {result && (
+            <Text fontSize={"24px"} textAlign="center">
+              In the days remaining this period youʼd have to average about{" "}
+              <Text fontWeight={"700"} as="span">
+                {result.toFixed(1)}
+              </Text>{" "}
+              per day
+            </Text>
+          )}
+        </Box>
+      </Flex>
+    </Flex>
+  );
 }
